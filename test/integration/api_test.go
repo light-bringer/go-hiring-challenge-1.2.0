@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	baseURL = "http://localhost:8485"
+	baseURL  = "http://localhost:8485"
 	testPort = "8485"
 )
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+
 	"gorm.io/gorm"
 )
 
@@ -34,8 +35,8 @@ func (r *categoriesRepository) CreateCategory(ctx context.Context, category *Cat
 	if err != nil {
 		// Check for unique constraint violation (PostgreSQL error code 23505)
 		if errors.Is(err, gorm.ErrDuplicatedKey) ||
-		   strings.Contains(err.Error(), "duplicate key") ||
-		   strings.Contains(err.Error(), "23505") {
+			strings.Contains(err.Error(), "duplicate key") ||
+			strings.Contains(err.Error(), "23505") {
 			return ErrDuplicateCode
 		}
 		return fmt.Errorf("failed to create category: %w", err)

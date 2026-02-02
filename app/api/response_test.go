@@ -9,7 +9,6 @@ import (
 )
 
 func TestOKResponse(t *testing.T) {
-
 	type sampleResponse struct {
 		Message string `json:"message"`
 	}

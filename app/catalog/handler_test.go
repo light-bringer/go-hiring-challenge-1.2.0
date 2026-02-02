@@ -7,10 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/mytheresa/go-hiring-challenge/models"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/mytheresa/go-hiring-challenge/models"
 )
 
 // Mock repository
@@ -158,7 +158,7 @@ func TestHandleGet_LimitBoundaries(t *testing.T) {
 		{"limit_zero", "limit=0", 0, http.StatusBadRequest},
 		{"limit_one", "limit=1", 1, http.StatusOK},
 		{"limit_max", "limit=100", 100, http.StatusOK},
-		{"limit_above_max", "limit=101", 100, http.StatusOK}, // Capped at max
+		{"limit_above_max", "limit=101", 100, http.StatusOK},  // Capped at max
 		{"limit_very_large", "limit=999", 100, http.StatusOK}, // Capped at max
 		{"limit_negative", "limit=-5", 0, http.StatusBadRequest},
 	}

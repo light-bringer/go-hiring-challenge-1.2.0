@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"context"
+
 	"github.com/mytheresa/go-hiring-challenge/app/dto"
 	"github.com/mytheresa/go-hiring-challenge/models"
 )

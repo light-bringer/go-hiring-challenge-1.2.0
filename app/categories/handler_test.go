@@ -8,9 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/mytheresa/go-hiring-challenge/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/mytheresa/go-hiring-challenge/models"
 )
 
 // Mock repository

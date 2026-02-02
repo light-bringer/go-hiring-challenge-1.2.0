@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"gorm.io/gorm"
 )
 
-var (
-	ErrProductNotFound = errors.New("product not found")
-)
+var ErrProductNotFound = errors.New("product not found")
 
 type productsRepository struct {
 	db *gorm.DB
@@ -50,7 +49,6 @@ func (r *productsRepository) GetAllProducts(ctx context.Context, opts ProductLis
 		Offset(opts.Offset).
 		Limit(opts.Limit).
 		Find(&products).Error
-
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to fetch products: %w", err)
 	}
@@ -66,7 +64,6 @@ func (r *productsRepository) GetProductByCode(ctx context.Context, code string) 
 		Preload("Variants").
 		Where("code = ?", code).
 		First(&product).Error
-
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrProductNotFound
