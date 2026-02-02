@@ -11,8 +11,10 @@ type ErrorResponseBody struct {
 
 func OKResponse(w http.ResponseWriter, data any) {
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(data); err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		// Headers already sent, write plain error message
+		_, _ = w.Write([]byte(`{"error":"encoding failed"}`))
 	}
 }
 
@@ -21,6 +23,7 @@ func ErrorResponse(w http.ResponseWriter, status int, message string) {
 	w.WriteHeader(status)
 	response := ErrorResponseBody{Error: message}
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, message, status)
+		// Headers already sent, write plain error message
+		_, _ = w.Write([]byte(`{"error":"encoding failed"}`))
 	}
 }
