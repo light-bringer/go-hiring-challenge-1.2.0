@@ -1,0 +1,46 @@
+# Build stage
+FROM golang:1.24.3-alpine AS builder
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache git make
+
+# Copy go mod files
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Vendor dependencies
+RUN go mod vendor
+
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/server ./cmd/server
+
+# Build the seed tool
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/seed ./cmd/seed
+
+# Runtime stage
+FROM alpine:latest
+
+WORKDIR /app
+
+# Install ca-certificates for HTTPS
+RUN apk --no-cache add ca-certificates
+
+# Copy binaries from builder
+COPY --from=builder /app/server .
+COPY --from=builder /app/seed .
+
+# Copy SQL migrations
+COPY sql ./sql
+
+# Expose port
+EXPOSE 8484
+
+# Run the application
+CMD ["./server"]
