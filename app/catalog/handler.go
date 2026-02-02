@@ -7,8 +7,17 @@ import (
 	"strconv"
 
 	"github.com/mytheresa/go-hiring-challenge/app/api"
+	"github.com/mytheresa/go-hiring-challenge/app/dto"
 	"github.com/mytheresa/go-hiring-challenge/models"
 	"github.com/shopspring/decimal"
+)
+
+// Pagination constants
+const (
+	DefaultOffset = 0
+	DefaultLimit  = 10
+	MinLimit      = 1
+	MaxLimit      = 100
 )
 
 // DecimalPrice is a custom type that marshals decimal.Decimal as JSON number with precision
@@ -35,27 +44,22 @@ type CatalogResponse struct {
 }
 
 type ProductDTO struct {
-	Code     string       `json:"code"`
-	Price    DecimalPrice `json:"price"`
-	Category *CategoryDTO `json:"category,omitempty"`
+	Code     string           `json:"code"`
+	Price    DecimalPrice     `json:"price"`
+	Category *dto.CategoryDTO `json:"category,omitempty"`
 }
 
 type ProductDetailDTO struct {
-	Code     string        `json:"code"`
-	Price    DecimalPrice  `json:"price"`
-	Category *CategoryDTO  `json:"category,omitempty"`
-	Variants []VariantDTO  `json:"variants"`
+	Code     string           `json:"code"`
+	Price    DecimalPrice     `json:"price"`
+	Category *dto.CategoryDTO `json:"category,omitempty"`
+	Variants []VariantDTO     `json:"variants"`
 }
 
 type VariantDTO struct {
 	Name  string       `json:"name"`
 	SKU   string       `json:"sku"`
 	Price DecimalPrice `json:"price"`
-}
-
-type CategoryDTO struct {
-	Code string `json:"code"`
-	Name string `json:"name"`
 }
 
 type CatalogHandler struct {
@@ -130,8 +134,8 @@ func (h *CatalogHandler) HandleGetByCode(w http.ResponseWriter, r *http.Request)
 
 // Helper: Parse pagination parameters
 func parsePaginationParams(r *http.Request) (offset, limit int, err error) {
-	offset = 0
-	limit = 10
+	offset = DefaultOffset
+	limit = DefaultLimit
 
 	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
 		offset, err = strconv.Atoi(offsetStr)
@@ -142,11 +146,11 @@ func parsePaginationParams(r *http.Request) (offset, limit int, err error) {
 
 	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
 		limit, err = strconv.Atoi(limitStr)
-		if err != nil || limit < 1 {
+		if err != nil || limit < MinLimit {
 			return 0, 0, fmt.Errorf("invalid limit parameter")
 		}
-		if limit > 100 {
-			limit = 100
+		if limit > MaxLimit {
+			limit = MaxLimit
 		}
 	}
 

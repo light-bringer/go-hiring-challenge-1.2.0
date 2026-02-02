@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"context"
+	"github.com/mytheresa/go-hiring-challenge/app/dto"
 	"github.com/mytheresa/go-hiring-challenge/models"
 )
 
@@ -38,37 +39,37 @@ func (s *CatalogService) GetProductWithVariants(ctx context.Context, code string
 
 // Helper: Map Product to DTO
 func toProductDTO(p models.Product) ProductDTO {
-	dto := ProductDTO{
+	result := ProductDTO{
 		Code:  p.Code,
 		Price: DecimalPrice{p.Price},
 	}
 
 	if p.Category != nil {
-		dto.Category = &CategoryDTO{
+		result.Category = &dto.CategoryDTO{
 			Code: p.Category.Code,
 			Name: p.Category.Name,
 		}
 	}
 
-	return dto
+	return result
 }
 
 // Helper: Map Product to Detail DTO with variants
 func toProductDetailDTO(p *models.Product) *ProductDetailDTO {
-	dto := &ProductDetailDTO{
+	result := &ProductDetailDTO{
 		Code:  p.Code,
 		Price: DecimalPrice{p.Price},
 	}
 
 	if p.Category != nil {
-		dto.Category = &CategoryDTO{
+		result.Category = &dto.CategoryDTO{
 			Code: p.Category.Code,
 			Name: p.Category.Name,
 		}
 	}
 
 	// Map variants with price inheritance
-	dto.Variants = make([]VariantDTO, len(p.Variants))
+	result.Variants = make([]VariantDTO, len(p.Variants))
 	for i, v := range p.Variants {
 		price := p.Price // Default to product price
 
@@ -77,12 +78,12 @@ func toProductDetailDTO(p *models.Product) *ProductDetailDTO {
 			price = *v.Price
 		}
 
-		dto.Variants[i] = VariantDTO{
+		result.Variants[i] = VariantDTO{
 			Name:  v.Name,
 			SKU:   v.SKU,
 			Price: DecimalPrice{price},
 		}
 	}
 
-	return dto
+	return result
 }

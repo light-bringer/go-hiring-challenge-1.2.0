@@ -7,17 +7,19 @@ import (
 	"net/http"
 
 	"github.com/mytheresa/go-hiring-challenge/app/api"
+	"github.com/mytheresa/go-hiring-challenge/app/dto"
 	"github.com/mytheresa/go-hiring-challenge/models"
+)
+
+// Validation constants
+const (
+	MaxCodeLength = 50
+	MaxNameLength = 255
 )
 
 // Response DTOs
 type CategoriesResponse struct {
-	Categories []CategoryDTO `json:"categories"`
-}
-
-type CategoryDTO struct {
-	Code string `json:"code"`
-	Name string `json:"name"`
+	Categories []dto.CategoryDTO `json:"categories"`
 }
 
 type CreateCategoryRequest struct {
@@ -33,11 +35,11 @@ func (r CreateCategoryRequest) Validate() error {
 	if r.Name == "" {
 		return fmt.Errorf("name is required")
 	}
-	if len(r.Code) > 50 {
-		return fmt.Errorf("code must not exceed 50 characters")
+	if len(r.Code) > MaxCodeLength {
+		return fmt.Errorf("code must not exceed %d characters", MaxCodeLength)
 	}
-	if len(r.Name) > 255 {
-		return fmt.Errorf("name must not exceed 255 characters")
+	if len(r.Name) > MaxNameLength {
+		return fmt.Errorf("name must not exceed %d characters", MaxNameLength)
 	}
 	return nil
 }
@@ -58,9 +60,9 @@ func (h *CategoriesHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	categoryDTOs := make([]CategoryDTO, len(categories))
+	categoryDTOs := make([]dto.CategoryDTO, len(categories))
 	for i, c := range categories {
-		categoryDTOs[i] = CategoryDTO{
+		categoryDTOs[i] = dto.CategoryDTO{
 			Code: c.Code,
 			Name: c.Name,
 		}
@@ -98,7 +100,7 @@ func (h *CategoriesHandler) HandlePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dto := CategoryDTO{
+	response := dto.CategoryDTO{
 		Code: category.Code,
 		Name: category.Name,
 	}
@@ -106,5 +108,5 @@ func (h *CategoriesHandler) HandlePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Location", fmt.Sprintf("/categories/%s", category.Code))
 	w.WriteHeader(http.StatusCreated)
-	_ = json.NewEncoder(w).Encode(dto)
+	_ = json.NewEncoder(w).Encode(response)
 }
