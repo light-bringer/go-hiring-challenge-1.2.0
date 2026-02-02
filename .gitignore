@@ -1,2 +1,10 @@
 /vendor
 coverage.out
+
+# Build artifacts
+server
+*.exe
+*.test
+
+# Metadata files
+CLAUDE.md

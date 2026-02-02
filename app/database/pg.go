@@ -10,7 +10,11 @@ import (
 )
 
 func New(user, password, dbname, port string) (db *gorm.DB, close func() error) {
-	dsn := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s?sslmode=disable", user, password, port, dbname)
+	return NewWithHost(user, password, dbname, port, "localhost")
+}
+
+func NewWithHost(user, password, dbname, port, host string) (db *gorm.DB, close func() error) {
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", user, password, host, port, dbname)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
