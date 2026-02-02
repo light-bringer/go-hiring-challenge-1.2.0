@@ -40,7 +40,7 @@ func (s *CatalogService) GetProductWithVariants(ctx context.Context, code string
 func toProductDTO(p models.Product) ProductDTO {
 	dto := ProductDTO{
 		Code:  p.Code,
-		Price: p.Price.InexactFloat64(),
+		Price: DecimalPrice{p.Price},
 	}
 
 	if p.Category != nil {
@@ -57,7 +57,7 @@ func toProductDTO(p models.Product) ProductDTO {
 func toProductDetailDTO(p *models.Product) *ProductDetailDTO {
 	dto := &ProductDetailDTO{
 		Code:  p.Code,
-		Price: p.Price.InexactFloat64(),
+		Price: DecimalPrice{p.Price},
 	}
 
 	if p.Category != nil {
@@ -80,7 +80,7 @@ func toProductDetailDTO(p *models.Product) *ProductDetailDTO {
 		dto.Variants[i] = VariantDTO{
 			Name:  v.Name,
 			SKU:   v.SKU,
-			Price: price.InexactFloat64(),
+			Price: DecimalPrice{price},
 		}
 	}
 

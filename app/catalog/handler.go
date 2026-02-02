@@ -11,6 +11,21 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+// DecimalPrice is a custom type that marshals decimal.Decimal as JSON number with precision
+type DecimalPrice struct {
+	decimal.Decimal
+}
+
+func (d DecimalPrice) MarshalJSON() ([]byte, error) {
+	return []byte(d.String()), nil
+}
+
+func (d *DecimalPrice) UnmarshalJSON(data []byte) error {
+	var err error
+	d.Decimal, err = decimal.NewFromString(string(data))
+	return err
+}
+
 // Response DTOs
 type CatalogResponse struct {
 	Products []ProductDTO `json:"products"`
@@ -21,21 +36,21 @@ type CatalogResponse struct {
 
 type ProductDTO struct {
 	Code     string       `json:"code"`
-	Price    float64      `json:"price"`
+	Price    DecimalPrice `json:"price"`
 	Category *CategoryDTO `json:"category,omitempty"`
 }
 
 type ProductDetailDTO struct {
 	Code     string        `json:"code"`
-	Price    float64       `json:"price"`
+	Price    DecimalPrice  `json:"price"`
 	Category *CategoryDTO  `json:"category,omitempty"`
 	Variants []VariantDTO  `json:"variants"`
 }
 
 type VariantDTO struct {
-	Name  string  `json:"name"`
-	SKU   string  `json:"sku"`
-	Price float64 `json:"price"`
+	Name  string       `json:"name"`
+	SKU   string       `json:"sku"`
+	Price DecimalPrice `json:"price"`
 }
 
 type CategoryDTO struct {

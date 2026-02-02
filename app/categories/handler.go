@@ -3,6 +3,7 @@ package categories
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/mytheresa/go-hiring-challenge/app/api"
@@ -22,6 +23,23 @@ type CategoryDTO struct {
 type CreateCategoryRequest struct {
 	Code string `json:"code"`
 	Name string `json:"name"`
+}
+
+// Validate checks if the request is valid
+func (r CreateCategoryRequest) Validate() error {
+	if r.Code == "" {
+		return fmt.Errorf("code is required")
+	}
+	if r.Name == "" {
+		return fmt.Errorf("name is required")
+	}
+	if len(r.Code) > 50 {
+		return fmt.Errorf("code must not exceed 50 characters")
+	}
+	if len(r.Name) > 255 {
+		return fmt.Errorf("name must not exceed 255 characters")
+	}
+	return nil
 }
 
 type CategoriesHandler struct {
@@ -61,8 +79,8 @@ func (h *CategoriesHandler) HandlePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate input
-	if req.Code == "" || req.Name == "" {
-		api.ErrorResponse(w, http.StatusBadRequest, "Code and name are required")
+	if err := req.Validate(); err != nil {
+		api.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -86,6 +104,7 @@ func (h *CategoriesHandler) HandlePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Location", fmt.Sprintf("/categories/%s", category.Code))
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(dto)
 }

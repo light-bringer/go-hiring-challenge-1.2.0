@@ -126,8 +126,8 @@ func TestHandleGetByCode_Success(t *testing.T) {
 
 	assert.Equal(t, "PROD001", response.Code)
 	assert.Equal(t, 2, len(response.Variants))
-	assert.Equal(t, 11.99, response.Variants[0].Price)
-	assert.Equal(t, 10.99, response.Variants[1].Price) // Inherited
+	assert.Equal(t, "11.99", response.Variants[0].Price.String())
+	assert.Equal(t, "10.99", response.Variants[1].Price.String()) // Inherited
 }
 
 func TestHandleGetByCode_NotFound(t *testing.T) {
