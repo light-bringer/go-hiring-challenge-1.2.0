@@ -55,7 +55,8 @@ func TestHandleGet_Success(t *testing.T) {
 	assert.Equal(t, http.StatusOK, recorder.Code)
 
 	var response CategoriesResponse
-	json.Unmarshal(recorder.Body.Bytes(), &response)
+	err := json.Unmarshal(recorder.Body.Bytes(), &response)
+	assert.NoError(t, err)
 
 	assert.Equal(t, 2, len(response.Categories))
 }
