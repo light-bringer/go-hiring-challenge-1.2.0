@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Documentation
+*.md
+!README.md
+
+# Tests
+coverage.out
+test/integration/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Build artifacts
+server
+*.exe
+*.test
+*.out
+
+# Dependencies (will be rebuilt)
+vendor/
+
+# Temporary files
+.env
+tmp/

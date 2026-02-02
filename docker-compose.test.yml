@@ -1,41 +1,39 @@
 services:
-  postgres:
+  postgres-test:
     image: postgres:17.5
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
       POSTGRES_DB: challenge
     ports:
-      - "5432:5432"
+      - "5433:5432"
     healthcheck:
       test: pg_isready
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - app-network
 
-  app:
+  test-runner:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.test
     environment:
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
       POSTGRES_DB: challenge
+      POSTGRES_HOST: postgres-test
+      POSTGRES_PORT: 5432
       POSTGRES_SQL_DIR: ./sql
-      HTTP_PORT: 8484
-    ports:
-      - "8484:8484"
+      HTTP_PORT: 8485
     depends_on:
-      postgres:
+      postgres-test:
         condition: service_healthy
-    networks:
-      - app-network
-    restart: unless-stopped
-
-networks:
-  app-network:
-    driver: bridge
+    volumes:
+      - .:/app
+    command: >
+      sh -c "
+        cd /app &&
+        export POSTGRES_HOST=postgres-test &&
+        go run cmd/seed/main.go &&
+        go test -v -count=1 ./test/integration/...
+      "

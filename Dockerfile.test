@@ -1,0 +1,21 @@
+FROM golang:1.24.3-alpine
+
+WORKDIR /app
+
+# Install necessary tools
+RUN apk add --no-cache git make
+
+# Copy go mod files
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Vendor dependencies
+RUN go mod vendor
+
+# Default command (will be overridden by docker-compose)
+CMD ["go", "test", "-v", "./test/integration/..."]
