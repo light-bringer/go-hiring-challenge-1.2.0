@@ -15,9 +15,6 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Vendor dependencies
-RUN go mod vendor
-
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/server ./cmd/server
 
@@ -25,7 +22,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/server ./cmd
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /app/seed ./cmd/seed
 
 # Runtime stage
-FROM alpine:latest
+FROM alpine:3.21
 
 WORKDIR /app
 

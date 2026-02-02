@@ -10,12 +10,6 @@ run ::
 test ::
 	@go test -v -count=1 -race ./... -coverprofile=coverage.out -covermode=atomic
 
-test-integration ::
-	@docker compose -f docker-compose.test.yml up --build --abort-on-container-exit --exit-code-from test-runner
-
-test-integration-cleanup ::
-	@docker compose -f docker-compose.test.yml down -v
-
 # Docker commands
 docker-build ::
 	@docker compose build
