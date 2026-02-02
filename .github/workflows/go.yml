@@ -47,4 +47,5 @@ jobs:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
         POSTGRES_DB: challenge
+        HTTP_PORT: 8485
       run: go test -v -count=1 -race ./...
