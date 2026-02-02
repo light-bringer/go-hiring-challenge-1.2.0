@@ -5,3 +5,6 @@ coverage.out
 server
 *.exe
 *.test
+
+# Metadata files
+CLAUDE.md
