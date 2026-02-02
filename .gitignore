@@ -1,2 +1,7 @@
 /vendor
 coverage.out
+
+# Build artifacts
+server
+*.exe
+*.test
