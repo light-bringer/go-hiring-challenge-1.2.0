@@ -15,6 +15,7 @@ import (
 	"github.com/mytheresa/go-hiring-challenge/app/catalog"
 	"github.com/mytheresa/go-hiring-challenge/app/categories"
 	"github.com/mytheresa/go-hiring-challenge/app/database"
+	"github.com/mytheresa/go-hiring-challenge/app/dto"
 	"github.com/mytheresa/go-hiring-challenge/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -165,7 +166,8 @@ func TestGetCatalog_PriceFilter(t *testing.T) {
 	decodeJSON(t, resp, &result)
 
 	for _, product := range result.Products {
-		assert.Less(t, product.Price, 10.0)
+		price, _ := product.Price.Float64()
+		assert.Less(t, price, 10.0)
 	}
 }
 
@@ -179,7 +181,8 @@ func TestGetCatalog_CombinedFilters(t *testing.T) {
 	for _, product := range result.Products {
 		assert.NotNil(t, product.Category)
 		assert.Equal(t, "clothing", product.Category.Code)
-		assert.Less(t, product.Price, 15.0)
+		price, _ := product.Price.Float64()
+		assert.Less(t, price, 15.0)
 	}
 }
 
@@ -210,13 +213,15 @@ func TestGetProductByCode_Success(t *testing.T) {
 	decodeJSON(t, resp, &result)
 
 	assert.Equal(t, "PROD001", result.Code)
-	assert.Greater(t, result.Price, 0.0)
+	productPrice, _ := result.Price.Float64()
+	assert.Greater(t, productPrice, 0.0)
 	assert.NotNil(t, result.Category)
 	assert.GreaterOrEqual(t, len(result.Variants), 1)
 
 	// Verify variants have prices (either their own or inherited)
 	for _, variant := range result.Variants {
-		assert.Greater(t, variant.Price, 0.0)
+		variantPrice, _ := variant.Price.Float64()
+		assert.Greater(t, variantPrice, 0.0)
 		assert.NotEmpty(t, variant.SKU)
 		assert.NotEmpty(t, variant.Name)
 	}
@@ -266,7 +271,7 @@ func TestPostCategory_Success(t *testing.T) {
 	resp := post(t, "/categories", reqBody)
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
 
-	var result categories.CategoryDTO
+	var result dto.CategoryDTO
 	decodeJSON(t, resp, &result)
 
 	assert.Equal(t, uniqueCode, result.Code)
