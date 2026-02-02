@@ -21,14 +21,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	baseURL  = "http://localhost:8485"
-	testPort = "8485"
-)
-
 var (
 	srv        *http.Server
 	httpClient *http.Client
+	baseURL    string
+	testPort   string
 )
 
 func TestMain(m *testing.M) {
@@ -77,6 +74,13 @@ func TestMain(m *testing.M) {
 	mux.HandleFunc("GET /catalog/{code}", catalogHandler.HandleGetByCode)
 	mux.HandleFunc("GET /categories", categoriesHandler.HandleGet)
 	mux.HandleFunc("POST /categories", categoriesHandler.HandlePost)
+
+	// Configure HTTP port for test server
+	testPort = os.Getenv("HTTP_PORT")
+	if testPort == "" {
+		testPort = "8485"
+	}
+	baseURL = fmt.Sprintf("http://localhost:%s", testPort)
 
 	// Set up the HTTP server
 	srv = &http.Server{

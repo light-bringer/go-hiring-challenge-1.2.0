@@ -91,9 +91,13 @@ func (h *CategoriesHandler) HandlePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Normalize input by trimming whitespace to match validation behavior
+	trimmedCode := strings.TrimSpace(req.Code)
+	trimmedName := strings.TrimSpace(req.Name)
+
 	category := &models.Category{
-		Code: req.Code,
-		Name: req.Name,
+		Code: trimmedCode,
+		Name: trimmedName,
 	}
 
 	if err := h.categoryRepo.CreateCategory(r.Context(), category); err != nil {
@@ -106,12 +110,12 @@ func (h *CategoriesHandler) HandlePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := dto.CategoryDTO{
-		Code: category.Code,
-		Name: category.Name,
+		Code: trimmedCode,
+		Name: trimmedName,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Location", fmt.Sprintf("/categories/%s", category.Code))
+	w.Header().Set("Location", fmt.Sprintf("/categories/%s", trimmedCode))
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(response)
 }
