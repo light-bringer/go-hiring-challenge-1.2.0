@@ -10,6 +10,15 @@ run ::
 test ::
 	@go test -v -count=1 -race ./... -coverprofile=coverage.out -covermode=atomic
 
+test-integration ::
+	@docker compose -f docker-compose.yml up -d
+	@sleep 2
+	@go test -v -count=1 ./test/integration/...
+	@$(MAKE) test-integration-cleanup
+
+test-integration-cleanup ::
+	@docker compose -f docker-compose.yml down -v
+
 # Docker commands
 docker-build ::
 	@docker compose build

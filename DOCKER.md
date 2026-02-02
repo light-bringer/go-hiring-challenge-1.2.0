@@ -146,7 +146,7 @@ The application uses a **multi-stage build**:
 - Optimized for build speed
 
 ### Stage 2: Runtime
-- Base: `alpine:latest`
+- Base: `alpine:3.21`
 - Minimal image size (~15MB)
 - Only contains binary and SQL migrations
 - No build tools or source code

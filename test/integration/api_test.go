@@ -93,7 +93,17 @@ func TestMain(m *testing.M) {
 
 	// Wait for server to be ready
 	httpClient = &http.Client{Timeout: 10 * time.Second}
-	time.Sleep(500 * time.Millisecond)
+	for i := 0; i < 50; i++ {
+		resp, err := httpClient.Get(baseURL + "/categories")
+		if err == nil && resp.StatusCode == http.StatusOK {
+			resp.Body.Close()
+			break
+		}
+		if i == 49 {
+			panic("Server did not become ready in time")
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
 
 	// Run tests
 	code := m.Run()
@@ -261,7 +271,7 @@ func TestGetCategories(t *testing.T) {
 
 func TestPostCategory_Success(t *testing.T) {
 	// Generate unique code to avoid conflicts
-	uniqueCode := fmt.Sprintf("test-%d", time.Now().Unix())
+	uniqueCode := fmt.Sprintf("test-%d", time.Now().UnixNano())
 
 	reqBody := categories.CreateCategoryRequest{
 		Code: uniqueCode,

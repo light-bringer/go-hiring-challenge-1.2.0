@@ -69,8 +69,12 @@ func main() {
 
 	// Set up the HTTP server
 	// Listen on 0.0.0.0 to accept connections from outside the container
+	port := os.Getenv("HTTP_PORT")
+	if port == "" {
+		port = "8484"
+	}
 	srv := &http.Server{
-		Addr:    fmt.Sprintf("0.0.0.0:%s", os.Getenv("HTTP_PORT")),
+		Addr:    fmt.Sprintf("0.0.0.0:%s", port),
 		Handler: mux,
 	}
 

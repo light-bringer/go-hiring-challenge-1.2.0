@@ -29,4 +29,3 @@ $$;
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_products_category_id ON products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_price ON products(price);
-CREATE INDEX IF NOT EXISTS idx_categories_code ON categories(code);
