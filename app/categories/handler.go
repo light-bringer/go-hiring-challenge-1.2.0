@@ -77,6 +77,32 @@ func (h *CategoriesHandler) HandleGet(w http.ResponseWriter, r *http.Request) {
 	api.OKResponse(w, response)
 }
 
+// HandleGetByCode handles GET /categories/{code}
+func (h *CategoriesHandler) HandleGetByCode(w http.ResponseWriter, r *http.Request) {
+	code := r.PathValue("code")
+	if code == "" {
+		api.ErrorResponse(w, http.StatusBadRequest, "Category code is required")
+		return
+	}
+
+	category, err := h.categoryRepo.GetCategoryByCode(r.Context(), code)
+	if err != nil {
+		if errors.Is(err, models.ErrCategoryNotFound) {
+			api.ErrorResponse(w, http.StatusNotFound, "Category not found")
+			return
+		}
+		api.ErrorResponse(w, http.StatusInternalServerError, "Failed to fetch category")
+		return
+	}
+
+	response := dto.CategoryDTO{
+		Code: category.Code,
+		Name: category.Name,
+	}
+
+	api.OKResponse(w, response)
+}
+
 // HandlePost handles POST /categories
 func (h *CategoriesHandler) HandlePost(w http.ResponseWriter, r *http.Request) {
 	var req CreateCategoryRequest

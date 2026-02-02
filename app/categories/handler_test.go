@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/mytheresa/go-hiring-challenge/app/dto"
 	"github.com/mytheresa/go-hiring-challenge/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -59,6 +60,56 @@ func TestHandleGet_Success(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, 2, len(response.Categories))
+}
+
+func TestHandleGetByCode_Success(t *testing.T) {
+	mockRepo := new(MockCategoryRepository)
+	handler := NewCategoriesHandler(mockRepo)
+
+	category := &models.Category{Code: "shoes", Name: "Shoes"}
+	mockRepo.On("GetCategoryByCode", mock.Anything, "shoes").Return(category, nil)
+
+	req := httptest.NewRequest("GET", "/categories/shoes", nil)
+	req.SetPathValue("code", "shoes")
+	recorder := httptest.NewRecorder()
+
+	handler.HandleGetByCode(recorder, req)
+
+	assert.Equal(t, http.StatusOK, recorder.Code)
+
+	var response dto.CategoryDTO
+	err := json.Unmarshal(recorder.Body.Bytes(), &response)
+	assert.NoError(t, err)
+	assert.Equal(t, "shoes", response.Code)
+	assert.Equal(t, "Shoes", response.Name)
+}
+
+func TestHandleGetByCode_NotFound(t *testing.T) {
+	mockRepo := new(MockCategoryRepository)
+	handler := NewCategoriesHandler(mockRepo)
+
+	mockRepo.On("GetCategoryByCode", mock.Anything, "missing").Return(nil, models.ErrCategoryNotFound)
+
+	req := httptest.NewRequest("GET", "/categories/missing", nil)
+	req.SetPathValue("code", "missing")
+	recorder := httptest.NewRecorder()
+
+	handler.HandleGetByCode(recorder, req)
+
+	assert.Equal(t, http.StatusNotFound, recorder.Code)
+}
+
+func TestHandleGetByCode_EmptyCode(t *testing.T) {
+	mockRepo := new(MockCategoryRepository)
+	handler := NewCategoriesHandler(mockRepo)
+
+	req := httptest.NewRequest("GET", "/categories/", nil)
+	req.SetPathValue("code", "")
+	recorder := httptest.NewRecorder()
+
+	handler.HandleGetByCode(recorder, req)
+
+	assert.Equal(t, http.StatusBadRequest, recorder.Code)
 }
 
 func TestHandlePost_Success(t *testing.T) {

@@ -73,6 +73,7 @@ func TestMain(m *testing.M) {
 	mux.HandleFunc("GET /catalog", catalogHandler.HandleGet)
 	mux.HandleFunc("GET /catalog/{code}", catalogHandler.HandleGetByCode)
 	mux.HandleFunc("GET /categories", categoriesHandler.HandleGet)
+	mux.HandleFunc("GET /categories/{code}", categoriesHandler.HandleGetByCode)
 	mux.HandleFunc("POST /categories", categoriesHandler.HandlePost)
 
 	// Configure HTTP port for test server
