@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/mytheresa/go-hiring-challenge/app/api"
 	"github.com/mytheresa/go-hiring-challenge/app/dto"
@@ -29,16 +30,20 @@ type CreateCategoryRequest struct {
 
 // Validate checks if the request is valid
 func (r CreateCategoryRequest) Validate() error {
-	if r.Code == "" {
+	// Trim whitespace for validation
+	code := strings.TrimSpace(r.Code)
+	name := strings.TrimSpace(r.Name)
+
+	if code == "" {
 		return fmt.Errorf("code is required")
 	}
-	if r.Name == "" {
+	if name == "" {
 		return fmt.Errorf("name is required")
 	}
-	if len(r.Code) > MaxCodeLength {
+	if len(code) > MaxCodeLength {
 		return fmt.Errorf("code must not exceed %d characters", MaxCodeLength)
 	}
-	if len(r.Name) > MaxNameLength {
+	if len(name) > MaxNameLength {
 		return fmt.Errorf("name must not exceed %d characters", MaxNameLength)
 	}
 	return nil

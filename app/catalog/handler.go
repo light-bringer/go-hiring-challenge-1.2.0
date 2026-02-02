@@ -175,7 +175,7 @@ func parseFilters(r *http.Request) (Filters, error) {
 		if err != nil {
 			return filters, fmt.Errorf("invalid price_less_than parameter")
 		}
-		if price.IsNegative() {
+		if price.LessThanOrEqual(decimal.Zero) {
 			return filters, fmt.Errorf("price_less_than must be positive")
 		}
 		filters.PriceLessThan = &price
