@@ -40,6 +40,16 @@ jobs:
     - name: Build
       run: go build -v ./...
 
+    - name: Run database migrations
+      env:
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: challenge
+        POSTGRES_SQL_DIR: ./sql
+      run: go run cmd/seed/main.go
+
     - name: Test
       env:
         POSTGRES_HOST: localhost
